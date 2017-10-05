@@ -1,0 +1,146 @@
+Assignment 4 readme File
+
+------------------------------------------------------------------------
+What is your name?
+
+Jingran Zhou
+
+------------------------------------------------------------------------
+What authorized sources of information did you use to complete
+the assignment? COPY THE LIST of authorized sources of information
+given in the "Policies" web page to this section of the readme file,
+and edit it as appropriate.
+
+The course's lectures about assembly and testing.
+
+The course's precepts by Guna.
+
+Piazza posts by Bob Dondero.
+
+Intel 64 and IA-32 Architectures Software Developer's Manual: Volume 2:
+Instruction Set Reference
+
+Computer Systems: A Programmer's Perspective (Third Edition),
+Randal E. Bryant and David R. O'Hallaron
+
+------------------------------------------------------------------------
+What unauthorized sources of information did you use to complete the
+assignment? List any unauthorized sources of information that you used
+to complete the assignment, and describe how you used them. The course
+"Policies" web page defines unauthorized sources of information, and
+any source that you have used but not listed in the authorized sources
+should be included here. Please note that using an unauthorized source
+may trigger a course penalty, and depending on the nature of the
+interaction, may additionally require the interaction being reported
+to the Committee on Discipline. Write "None" if you used no
+unauthorized sources of information.
+
+None
+
+------------------------------------------------------------------------
+What is your assessment of the assignment? Was it helpful? Was it fun?
+
+It was absolutely helpful!
+I struggled in doing the extra challenge. At first, it was very
+frustrating, and I totally lost confidence. However, after countless
+debugging, testing and trial-and-errors, I finally got it working.
+It is absolutely amazing that I can beat the compiler!
+Although I had a really tough time doing this assignment, I learned so
+much. Not just CS knowledge, but also the spirit of not giving up.
+I assume that a lot of my classmates are going to complain about it,
+but I like this assignment! Doing the extra challenge is totally
+worth my time!
+
+------------------------------------------------------------------------
+(optional) What information can you provide about your submission that
+will help your grader to grade it in the most favorable light? In
+particular, what bugs are in your submission?
+
+It's my first time writing assembly, and I had a really hard time doing
+the extra challenge. I studied the given instruction set very carefully
+and used some instructions that are not taught in the lectures/precepts.
+
+------------------------------------------------------------------------
+What is your mywc program test plan?
+
+===============================================================
+Test with input file mywcB0_empty.txt
+===============================================================
+Boundary test: This is an empty file.
+It is testing the case where the while loop is not executed at
+all. Also, since iInWord is FALSE, lWordCount will remain 0.
+So everything will be 0 in this case.
+
+===============================================================
+Test with input file mywcB1_space.txt
+===============================================================
+Boundary test: This is a file containing only a space.
+It is testing the case where there is only 1 char.
+The program enters the while loop, and sees that it is a space,
+and the space is not in word, so it does nothing else.
+
+===============================================================
+Test with input file mywcB2_one_char.txt
+===============================================================
+Boundary test: This is a file containing just one character.
+The program enters the while loop, and sees that this is not a
+space. Since the program is not in any word, it sets iInWord
+to true. So there is 1 character and 1 word.
+
+===============================================================
+Test with input file mywcB3_newline.txt
+===============================================================
+Boundary test: This is a file containing just one newline
+character. It goes into the while loop and sees that this is
+exactly a newline character, and is not in any word. So we
+have 1 line here.
+
+===============================================================
+Test with input file mywcSTMT.txt
+===============================================================
+Statement test: This is a file that tests every statement of
+the program. Let's go through this char by char.
+"Oh me \n\nOh life!"
+To cover all statements, we need to cover the following lines:
+30, 32, 34, 36, 38, 39, 42, 44, 45, 48, 49, 52, 53, 55, 56
+
+Read "O" - Line 30, 32, 34, 42, 44, 45, 48
+Read "h" - Line 30, 32, 34, 42, 44, 48
+Read " " - Line 30, 34, 36, 38, 39, 48
+Read "me "...
+Read "\n" - Line 30, 32, 34, 36, 48, 49
+Read "\nOh life!"...
+Note that iInWord is still TRUE.
+Read "EOF" - Line 52, 53, 55, 56
+
+Clearly, we've reached every statement in the program.
+
+===============================================================
+Test with input file mywcSTRS0.txt
+===============================================================
+Stress test: This is a large file containing randomly generated
+characters.
+
+===============================================================
+Test with input file mywcSTRS1.txt
+===============================================================
+Stress test: This is a large file containing randomly generated
+characters.
+
+------------------------------------------------------------------------
+What are the CPU times consumed by the programs from Parts 2a, 2b, 2d,
+2e, and 2f to compute fib(500000)? Fill in the blanks.
+
+Part 2a:  15.39 seconds
+
+Part 2b:  6.59 seconds
+
+Part 2d:  14.72 seconds
+
+Part 2e:  8.02 seconds
+
+Part 2f:  1.69 seconds
+
+
+
+

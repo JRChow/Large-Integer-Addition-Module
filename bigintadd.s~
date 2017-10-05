@@ -1,0 +1,230 @@
+/*--------------------------------------------------------------------*/
+/* bigintadd.s                                                        */
+/* Author: Jingran Zhou                                               */
+/*--------------------------------------------------------------------*/
+        .equ FALSE, 0
+        .equ TRUE, 1
+
+        .equ MAX_DIGITS, 32768
+
+        .equ LLENGTH, 0
+### --------------------------------------------------------------------
+        .section ".rodata"
+### --------------------------------------------------------------------
+        .section ".data"
+### --------------------------------------------------------------------
+        .section ".bss"
+### --------------------------------------------------------------------
+        .section ".text"
+        ## -------------------------------------------------------------
+        ## Return the larger of lLength1 and lLength2.
+        ## static long BigInt_larger(long lLength1, long lLength2)
+        ## -------------------------------------------------------------
+
+        ## Local variables:
+        .equ LLARGER, 0
+
+        ## Parameters:
+        .equ LLENGTH2, 8
+        .equ LLENGTH1, 16
+
+        .equ STACK_BYTECOUNT, 24
+
+        .type BigInt_larger,@function
+
+BigInt_larger:
+        ## Save lLength1 to the stack.
+        pushq %rdi
+
+        ## Save lLength2 to the stack.
+        pushq %rsi
+
+        ## long lLarger
+        subq $8, %rsp
+
+        ## if (lLength1 <= lLength2) goto else0
+        movq LLENGTH2(%rsp), %rax
+        cmpq %rax, LLENGTH1(%rsp)
+        jle else0
+
+        ## lLarger = lLength1
+        movq LLENGTH1(%rsp), %rax
+        movq %rax, LLARGER(%rsp)
+
+        ## goto endif0
+        jmp endif0
+
+else0:  
+        ## lLarger = lLength2
+        movq LLENGTH2(%rsp), %rax
+        movq %rax, LLARGER(%rsp)
+
+endif0:
+        ## return lLarger
+        movq LLARGER(%rsp), %rax
+        addq $STACK_BYTECOUNT, %rsp
+        ret
+
+        ## -------------------------------------------------------------
+        ## Assign the sum of oAddend1 and oAddend2 to oSum. oSum should
+        ## be distinct from oAddend1 and oAddend2. Return 0 (FALSE) if
+        ## an overflow occured, and 1 (TRUE) otherwise.
+        ## int BigInt_add(BigInt_T oAddend1, BigInt_T oAddend2,
+        ##                BigInt_T oSum)
+        ## -------------------------------------------------------------
+
+        ## Local vairables:
+        .equ ULCARRY, 0
+        .equ ULSUM, 8
+        .equ LINDEX, 16
+        .equ LSUMLENGTH, 24
+
+        ## Parameters:
+        .equ OSUM, 32
+        .equ OADDEND2, 40
+        .equ OADDEND1, 48
+
+        .equ STACK_BYTECOUNT, 56
+
+        .globl BigInt_add
+        .type BigInt_add,@function
+
+BigInt_add:
+        ## Save oAddend1 to the stack.
+        pushq %rdi
+        
+        ## Save oAddend2 to the stack.
+        pushq %rsi
+        
+        ## Save oSum to the stack.
+        pushq %rdx
+
+        ## unsigned long ulCarry
+        subq $8, %rsp
+
+        ## unsigned long ulSum
+        subq $8, %rsp
+
+        ## long lIndex
+        subq $8, %rsp
+
+        ## long lSumLength
+        subq $8, %rsp
+
+        ## lSumLength = BigInt_larger(oAddend1->lLength,
+        ##                            oAddend2->lLength)
+        movq OADDEND1(%rsp), %rax
+        movq LLENGTH(%rax), %rdi
+        movq OADDEND2(%rsp), %rax
+        movq LLENGTH(%rax), %rsi
+        call BigInt_larger
+        movq %rax, LSUMLENGTH(%rsp)
+
+        ## if (oSum->lLength <= lSumLength) goto endif1
+        movq OSUM(%rsp), %rax
+        movq LSUMLENGTH(%rsp), %r10
+        cmpq %r10, LLENGTH(%rax)
+        jle endif1
+
+        ## memset(oSum->aulDigits, 0, MAX_DIGITS*sizeof(unsigned long))
+        movq OSUM(%rsp), %rdi
+        addq $8, %rdi
+        movq $0, %rsi
+        movq $MAX_DIGITS, %r10
+        imulq $8, %r10
+        movq %r10, %rdx
+        call memset
+
+endif1:
+
+        ## ulCarry = 0
+        movq $0, ULCARRY(%rsp)
+
+        ## lIndex = 0
+        movq $0, LINDEX(%rsp)
+
+loop1:
+        ## if (lIndex >= lSumLength) goto endloop1;
+        movq LSUMLENGTH(%rsp), %rax
+        cmpq %rax, LINDEX(%rsp)
+        jge endloop1
+
+        ## ulSum = ulCarry
+        movq ULCARRY(%rsp), %rax
+        movq %rax, ULSUM(%rsp)
+
+        ## ulCarry = 0
+        movq $0, ULCARRY(%rsp)
+
+        ## ulSum += oAddend1->aulDigits[lIndex]
+        movq OADDEND1(%rsp), %rax
+        movq LINDEX(%rsp), %r10
+        movq 8(%rax, %r10, 8), %rax
+        addq %rax, ULSUM(%rsp)
+
+        ## if (ulSum >= oAddend1->aulDigits[lIndex]) goto endif2
+        cmpq %rax, ULSUM(%rsp)
+        jae endif2
+
+        ## ulCarry = 1
+        movq $1, ULCARRY(%rsp)
+
+endif2:
+        ## ulSum += oAddend2->aulDigits[lIndex]
+        movq OADDEND2(%rsp), %rax
+        movq LINDEX(%rsp), %r10
+        movq 8(%rax, %r10, 8), %rax
+        addq %rax, ULSUM(%rsp)
+
+        ## if (ulSum >= oAddend2->aulDigits[lIndex]) goto endif3
+        cmpq %rax, ULSUM(%rsp)
+        jae endif3
+
+        ## ulCarry = 1
+        movq $1, ULCARRY(%rsp)
+
+endif3:
+        ## oSum->aulDigits[lIndex] = ulSum
+        movq OSUM(%rsp), %rax
+        movq LINDEX(%rsp), %r10
+        movq ULSUM(%rsp), %r11
+        movq %r11, 8(%rax, %r10, 8)
+
+        ## lIndex++
+        incq LINDEX(%rsp)
+
+        ## goto loop1
+        jmp loop1
+endloop1:
+        ## if (ulCarry != 1) goto endif4
+        cmpq $1, ULCARRY(%rsp)
+        jne endif4
+
+        ## if (lSumLength != MAX_DIGITS) goto endif5
+        cmpq $MAX_DIGITS, LSUMLENGTH(%rsp)
+        jne endif5
+
+        ## return FALSE
+        movq $FALSE, %rax
+        addq $STACK_BYTECOUNT, %rsp
+        ret
+
+endif5:
+        ## oSum->aulDigits[lSumLength] = 1;
+        movq OSUM(%rsp), %rax
+        movq LSUMLENGTH(%rsp), %r10
+        movq $1, 8(%rax, %r10, 8)
+
+        ## lSumLength++
+        incq LSUMLENGTH(%rsp)
+
+endif4:
+        ## oSum->lLength = lSumLength
+        movq OSUM(%rsp), %rax
+        movq LSUMLENGTH(%rsp), %r10
+        movq %r10, LLENGTH(%rax)
+
+        ## return TRUE
+        movq $TRUE, %rax
+        addq $STACK_BYTECOUNT, %rsp
+        ret

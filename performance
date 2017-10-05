@@ -1,0 +1,23 @@
+CPU: Intel Haswell microarchitecture, speed 3.1e+06 MHz (estimated)
+Counted CPU_CLK_UNHALTED events (Clock cycles when not halted) with a unit mask of 0x00 (No unit mask) count 100000
+samples  %        image name               symbol name
+203764   92.1300  fib                      BigInt_add
+8200      3.7076  libc-2.17.so             random_r
+5506      2.4895  libc-2.17.so             random
+1462      0.6610  libc-2.17.so             rand
+1335      0.6036  fib                      BigInt_random
+590       0.2668  no-vmlinux               /no-vmlinux
+206       0.0931  libc-2.17.so             __memset_sse2
+73        0.0330  fib                      main
+15        0.0068  libc-2.17.so             vfprintf
+4         0.0018  libc-2.17.so             _itoa_word
+3         0.0014  fib                      BigInt_largest
+2        9.0e-04  libc-2.17.so             _IO_file_xsputn@@GLIBC_2.2.5
+2        9.0e-04  libc-2.17.so             __GI___mempcpy
+2        9.0e-04  libc-2.17.so             fprintf
+1        4.5e-04  libc-2.17.so             _IO_file_overflow@@GLIBC_2.2.5
+1        4.5e-04  libc-2.17.so             _dl_addr
+1        4.5e-04  libc-2.17.so             _int_free
+1        4.5e-04  libc-2.17.so             calloc
+1        4.5e-04  libc-2.17.so             fflush
+1        4.5e-04  libc-2.17.so             strchrnul

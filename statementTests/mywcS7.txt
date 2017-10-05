@@ -1,0 +1,4 @@
+File Edit
+Options Buffers
+Tools Text
+Help
